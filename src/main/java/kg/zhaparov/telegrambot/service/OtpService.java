@@ -25,7 +25,7 @@ public class OtpService {
 
         String otp = String.format("%06d", new Random().nextInt(999999));
         String key = "tg:otp:" + phoneNumber;
-        redisTemplate.opsForValue().set(key, otp, 60, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set(key, otp, 3, TimeUnit.MINUTES);
         return otp;
     }
 
