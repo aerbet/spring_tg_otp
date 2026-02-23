@@ -40,7 +40,6 @@ public class OtpBot implements SpringLongPollingBot, LongPollingSingleThreadUpda
     private ReplyKeyboardMarkup sharePhoneKeyboard() {
         KeyboardButton startButton = KeyboardButton.builder()
                 .text("Инструкция")
-                .requestContact(true)
                 .build();
 
         KeyboardButton shareButton = KeyboardButton.builder()
@@ -73,7 +72,9 @@ public class OtpBot implements SpringLongPollingBot, LongPollingSingleThreadUpda
 
             SendMessage reply = SendMessage.builder()
                     .chatId(chatId)
-                    .text("Ваш одноразовый код: " + otp)
+                    .text("Ваш код подтверждения: " + "<code>" + otp + "</code>\n"
+                    + "\nНажав на код, вы скопируете его \uD83D\uDCDD")
+                    .parseMode("HTML")
                     .build();
             try {
                 telegramClient.execute(reply);
@@ -88,8 +89,8 @@ public class OtpBot implements SpringLongPollingBot, LongPollingSingleThreadUpda
             if (!text.isEmpty()) {
                 SendMessage ask = SendMessage.builder()
                         .chatId(chatId)
-                        .text("Нажмите на кнопку =Поделиться номером=, чтобы получить код\n" +
-                                "Или напишите номер вручную")
+                        .text("Для получения кода, нажмите на кнопку <pre>Поделиться номером</pre>ниже \uD83D\uDC47")
+                        .parseMode("HTML")
                         .replyMarkup(sharePhoneKeyboard())
                         .build();
                 try {
@@ -97,18 +98,6 @@ public class OtpBot implements SpringLongPollingBot, LongPollingSingleThreadUpda
                 } catch (TelegramApiException e) {
                     e.printStackTrace();
                 }
-                return;
-            }
-
-            String otp = otpService.generateOtp(text);
-            SendMessage reply = SendMessage.builder()
-                    .chatId(chatId)
-                    .text("Ваш OTP: " + otp)
-                    .build();
-            try {
-                telegramClient.execute(reply);
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
             }
         }
     }
